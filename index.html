@@ -81,6 +81,34 @@
             gap: 10px;
         }
 
+        /* Confetti styles */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: red;
+            z-index: 1000;
+            animation: fall linear forwards;
+        }
+
+        /* Animation that causes the confetti to fall */
+        @keyframes fall {
+            0% { top: -10%; left: calc(10% + 90% * var(--rand)); opacity: 1; transform: rotateZ(0deg); }
+            100% { top: 110%; left: calc(5% + 90% * var(--rand)); opacity: 0; transform: rotateZ(360deg); }
+        }
+
+        /* Randomize the animation properties for each confetti */
+        .confetti:nth-child(odd) {
+            background-color: #ff0;
+            animation-duration: var(--speed);
+            animation-delay: var(--delay);
+        }
+        .confetti:nth-child(even) {
+            background-color: #0f0;
+            animation-duration: var(--speed);
+            animation-delay: var(--delay);
+        }
+
         /* Media queries for responsiveness */
         @media (max-width: 600px) {
             #modal-content {
@@ -160,6 +188,22 @@
         </div>
     </div>
     <script>
+
+        function createConfetti() {
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.setProperty('--rand', Math.random());
+                confetti.style.setProperty('--speed', (Math.random() * 3000 + 3000) + 'ms');
+                confetti.style.setProperty('--delay', (Math.random() * 1000) + 'ms');
+                document.body.appendChild(confetti);
+            }
+        }
+
+        function clearConfetti() {
+            document.querySelectorAll('.confetti').forEach(el => el.remove());
+        }
+
         //mensagens de sucesso
         function getRandomPrize() {
             const prizes = [
@@ -260,6 +304,7 @@
                 winningMessage.style.display = "none"; 
                 modal.style.display = "flex";
             } else {
+                createConfetti();
                 msgPrize = getRandomPrize()
                 modalText.textContent = msgPrize;
                 modalButton.textContent = "Resgatar Prêmio";
@@ -274,6 +319,7 @@
         function closeModal() {
             document.getElementById('overlay').style.display = 'none';
             if (spinCount >= 2) {
+                createConfetti();
                 window.location.href = 'https://www.bet69pro.bet/register?id=657b639287f7080028f3d57c'; 
                 spinCount = 0; 
             }
