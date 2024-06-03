@@ -59,13 +59,13 @@
             this.load.image("wheel", "images/roleta01.png");
             this.load.image("needle", "Needle.png");
             this.load.image("tiger", "images/tiger.png");
+            this.load.audio("spinSound", "sounds/spinSound.mp3"); // Carrega o arquivo de áudio
         }
 
         function create() {
             var wheel = this.add.sprite(550, this.cameras.main.height / 2, "wheel").setInteractive();
             wheel.setOrigin(0.5);
             wheel.setScale(0.75);
-            this.input.on('pointerdown', rotateTheWheel, this); // Corrigido para garantir que a roleta gire ao clicar
 
             var needle = this.add.sprite(850, this.cameras.main.height / 2, "needle");
             needle.setOrigin(0.5);
@@ -73,17 +73,23 @@
 
             var tiger = this.add.image(1250, this.cameras.main.height / 2 + 200, "tiger");
             tiger.setScale(0.5);
-        }
 
-        function rotateTheWheel() {
-            spinCount++;
-            this.tweens.add({
-                targets: this.children.list[0], // Certifique-se de que este é o sprite da roleta
-                angle: 360 * 5 + Math.random() * 360, // Gira entre 5 a 6 voltas completas
-                duration: 8000,
-                ease: 'Cubic.easeOut',
-                onComplete: checkResult.bind(this)
-            });
+            var spinSound = this.sound.add("spinSound"); // Adiciona o som ao jogo
+
+            this.input.on('pointerdown', function () {
+                spinCount++;
+                spinSound.play(); // Toca o som quando a roleta começa a girar
+                this.tweens.add({
+                    targets: wheel,
+                    angle: 360 * 5 + Math.random() * 360, // Gira entre 5 a 6 voltas completas
+                    duration: 8000, // Aumentado para um giro mais lento
+                    ease: 'Cubic.easeOut',
+                    onComplete: () => {
+                        spinSound.stop(); // Para o som quando a roleta parar
+                        checkResult.call(this);
+                    }
+                });
+            }, this);
         }
 
         function checkResult() {
