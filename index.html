@@ -249,6 +249,7 @@
 
         var game = new Phaser.Game(config);
         var spinCount = 0; 
+        var winSound;
 
         function preload() {
             this.load.crossOrigin = 'anonymous';
@@ -257,6 +258,7 @@
             this.load.image("needle", "Needle.png");
             this.load.image("tiger", "images/tiger.png");
             this.load.audio("spinSound", "sounds/spinSound.mp3"); 
+            this.load.audio("winSound", "sounds/winSound.mp3"); 
         }
 
         function create() {
@@ -273,6 +275,7 @@
             tiger.setScale(0.5);
 
             var spinSound = this.sound.add("spinSound");
+            winSound = this.sound.add("winSound");
 
             this.input.on('pointerdown', function () {
                 spinCount++;
@@ -313,6 +316,7 @@
                     window.location.href = 'https://www.bet69pro.bet/register?id=657b639287f7080028f3d57c';
                 };
                 modal.style.display = "flex";
+                winSound.play();
             }
         }
 
