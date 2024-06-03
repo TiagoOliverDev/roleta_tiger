@@ -73,6 +73,52 @@
             margin-top: 20px;
         }
 
+        /* Media queries for responsiveness */
+        @media (max-width: 600px) {
+            #modal-content {
+                width: 80%;
+                padding: 20px;
+            }
+            #modal button {
+                font-size: 16px;
+                padding: 12px 24px;
+            }
+            .sprite {
+                width: 70%;
+            }
+            #dwheel .sprite {
+                max-width: 50%; /* Reduce size of wheel and tiger */
+                height: auto; /* Maintain aspect ratio */
+            }
+            #dwheel {
+                flex-direction: column; /* Stack wheel and tiger vertically */
+            }
+        }
+
+        @media (min-width: 601px) and (max-width: 1024px) {
+            #modal-content {
+                width: 50%; /* Moderate size for tablets */
+            }
+            #modal button {
+                font-size: 20px; /* Slightly larger button text on tablets */
+                padding: 18px 36px;
+            }
+            .sprite {
+                width: 80%; /* Larger sprites for tablet */
+            }
+        }
+
+        @media (min-width: 1025px) {
+            #modal-content {
+                width: 30%; /* Optimal width for large screens */
+                height: 30%; /* Adjust modal height */
+            }
+            #modal button {
+                font-size: 22px; /* Larger text for larger screens */
+                padding: 20px 40px;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -150,7 +196,8 @@
 
         function preload() {
             this.load.crossOrigin = 'anonymous';
-            this.load.image("wheel", "images/roleta01.png");
+            // this.load.image("wheel", "images/roleta01.png");
+            this.load.image("wheel", "images/roletanova.svg");
             this.load.image("needle", "Needle.png");
             this.load.image("tiger", "images/tiger.png");
             this.load.audio("spinSound", "sounds/spinSound.mp3"); 
@@ -159,7 +206,8 @@
         function create() {
             var wheel = this.add.sprite(550, this.cameras.main.height / 2, "wheel").setInteractive();
             wheel.setOrigin(0.5);
-            wheel.setScale(0.75);
+            // wheel.setScale(0.75);
+            wheel.setScale(0.4);
 
             var needle = this.add.sprite(850, this.cameras.main.height / 2, "needle");
             needle.setOrigin(0.5);
@@ -201,7 +249,7 @@
                 modalText.textContent = msgPrize;
                 modalButton.textContent = "Resgatar Prêmio";
                 modalButton.onclick = function() { 
-                    window.location.href = 'https://google.com';
+                    window.location.href = 'https://www.bet69pro.bet/register?id=657b639287f7080028f3d57c';
                 };
                 modal.style.display = "flex";
             }
@@ -210,7 +258,7 @@
         function closeModal() {
             document.getElementById('overlay').style.display = 'none';
             if (spinCount >= 3) {
-                window.location.href = 'https://google.com'; 
+                window.location.href = 'https://www.bet69pro.bet/register?id=657b639287f7080028f3d57c'; 
                 spinCount = 0; 
             }
         }
