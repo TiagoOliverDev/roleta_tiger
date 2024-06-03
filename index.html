@@ -72,6 +72,14 @@
             font-size: 18px;
             margin-top: 20px;
         }
+        .win-message {
+            color: green;
+            font-size: 35px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
         /* Media queries for responsiveness */
         @media (max-width: 600px) {
@@ -125,6 +133,10 @@
     <div id="dwheel"></div>
     <div id="overlay">
         <div id="modal-content">
+            <div id="winning-message" class="win-message" style="display: none;">
+                <span>Você ganhooou !!</span> 
+                <span>🎉</span>
+            </div>
             <p 
                 style="
                     font-size: 27px;
@@ -238,16 +250,20 @@
             let modalText = document.getElementById('modal-text');
             let modalButton = document.getElementById('modal-button');
             let modal = document.getElementById('overlay');
-            if (spinCount < 3) {
+            let winningMessage = document.getElementById('winning-message');
+
+            if (spinCount < 2) {
                 msgError = getRandomError()
                 modalText.textContent = msgError;
                 modalButton.textContent = "Tentar Novamente";
                 modalButton.onclick = closeModal; 
+                winningMessage.style.display = "none"; 
                 modal.style.display = "flex";
             } else {
                 msgPrize = getRandomPrize()
                 modalText.textContent = msgPrize;
                 modalButton.textContent = "Resgatar Prêmio";
+                winningMessage.style.display = "flex"; 
                 modalButton.onclick = function() { 
                     window.location.href = 'https://www.bet69pro.bet/register?id=657b639287f7080028f3d57c';
                 };
@@ -257,7 +273,7 @@
 
         function closeModal() {
             document.getElementById('overlay').style.display = 'none';
-            if (spinCount >= 3) {
+            if (spinCount >= 2) {
                 window.location.href = 'https://www.bet69pro.bet/register?id=657b639287f7080028f3d57c'; 
                 spinCount = 0; 
             }
