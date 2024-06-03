@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Discount Wheel</title>
+    <script src="jquery.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.js"></script>
+	
+    <style>
+        body {
+            text-align: center;
+            background-image: url('images/fundo02.jpg');
+            background-size: cover; 
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            margin: 0;
+            overflow: hidden;
+        }
+        #dwheel {
+            display: inline-block;
+            padding: 10px;
+            margin: 0 auto;
+            position: relative;
+            width: 100%; /* Ajustado para ocupar a largura total */
+            height: 100vh; /* Ajustado para ocupar a altura total da janela */
+        }
+        canvas {
+            background: none !important;
+            display: block;
+            margin: 0 auto;
+            touch-action: none;
+            user-select: none;
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+            width: 100%; /* Garante que o canvas ocupe a largura total do div */
+            height: 100%; /* Altura completa do div */
+        }
+    </style>
+</head>
+<body>
+    <div id="dwheel"></div>
+    <script>
+        var config = {
+            type: Phaser.AUTO,
+            width: window.innerWidth, // Usa a largura da janela do navegador
+            height: window.innerHeight, // Usa a altura da janela do navegador
+            parent: 'dwheel',
+            transparent: true,
+            scene: {
+                preload: preload,
+                create: create
+            }
+        };
+
+        var game = new Phaser.Game(config);
+
+        function preload() {
+            this.load.crossOrigin = 'anonymous';
+            this.load.image("wheel", "images/roleta01.png");
+            this.load.image("needle", "Needle.png");
+            this.load.image("tiger", "images/tiger.png");
+        }
+
+        function create() {
+            // Posiciona a roleta mais à esquerda
+            var wheel = this.add.sprite(550, this.cameras.main.height / 2, "wheel");
+            wheel.setOrigin(0.5);
+            wheel.setScale(0.75);
+            wheel.setInteractive();
+            wheel.on('pointerdown', rotateTheWheel, this);
+
+            // Posiciona a agulha
+            var needle = this.add.sprite(850, this.cameras.main.height / 2, "needle");
+            needle.setOrigin(0.5);
+            needle.setScale(0.75);
+
+            // Posiciona o tigre mais à direita, abaixo da roleta
+            var tiger = this.add.image(1250, this.cameras.main.height / 2 + 200, "tiger");
+            tiger.setScale(0.5);
+
+            var wheelstarted = false;
+
+            function rotateTheWheel() {
+                if (!wheelstarted) {
+                    wheelstarted = true;
+                    this.tweens.add({
+                        targets: wheel,
+                        angle: 685,
+                        duration: 5000,
+                        ease: 'Cubic.easeOut',
+                        onComplete: function() {
+                            alert("Parabéns! Você ganhou 3% ou saldo x será redirecionado exemplo.");
+                            window.location.href = 'https://google.com';
+                        }
+                    });
+                }
+            }
+        }
+    </script>
+</body>
+</html>
