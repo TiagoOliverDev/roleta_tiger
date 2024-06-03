@@ -6,7 +6,6 @@
     <title>Discount Wheel</title>
     <script src="jquery.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.js"></script>
-	
     <style>
         body {
             text-align: center;
@@ -22,8 +21,8 @@
             padding: 10px;
             margin: 0 auto;
             position: relative;
-            width: 100%; /* Ajustado para ocupar a largura total */
-            height: 100vh; /* Ajustado para ocupar a altura total da janela */
+            width: 100%;
+            height: 100vh;
         }
         canvas {
             background: none !important;
@@ -32,8 +31,8 @@
             touch-action: none;
             user-select: none;
             -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-            width: 100%; /* Garante que o canvas ocupe a largura total do div */
-            height: 100%; /* Altura completa do div */
+            width: 100%;
+            height: 100%;
         }
     </style>
 </head>
@@ -42,8 +41,8 @@
     <script>
         var config = {
             type: Phaser.AUTO,
-            width: window.innerWidth, // Usa a largura da janela do navegador
-            height: window.innerHeight, // Usa a altura da janela do navegador
+            width: window.innerWidth,
+            height: window.innerHeight,
             parent: 'dwheel',
             transparent: true,
             scene: {
@@ -53,6 +52,7 @@
         };
 
         var game = new Phaser.Game(config);
+        var spinCount = 0; // Contador para o número de giros
 
         function preload() {
             this.load.crossOrigin = 'anonymous';
@@ -62,38 +62,37 @@
         }
 
         function create() {
-            // Posiciona a roleta mais à esquerda
-            var wheel = this.add.sprite(550, this.cameras.main.height / 2, "wheel");
+            var wheel = this.add.sprite(550, this.cameras.main.height / 2, "wheel").setInteractive();
             wheel.setOrigin(0.5);
             wheel.setScale(0.75);
-            wheel.setInteractive();
-            wheel.on('pointerdown', rotateTheWheel, this);
+            this.input.on('pointerdown', rotateTheWheel, this); // Corrigido para garantir que a roleta gire ao clicar
 
-            // Posiciona a agulha
             var needle = this.add.sprite(850, this.cameras.main.height / 2, "needle");
             needle.setOrigin(0.5);
             needle.setScale(0.75);
 
-            // Posiciona o tigre mais à direita, abaixo da roleta
             var tiger = this.add.image(1250, this.cameras.main.height / 2 + 200, "tiger");
             tiger.setScale(0.5);
+        }
 
-            var wheelstarted = false;
+        function rotateTheWheel() {
+            spinCount++;
+            this.tweens.add({
+                targets: this.children.list[0], // Certifique-se de que este é o sprite da roleta
+                angle: 360 * 5 + Math.random() * 360, // Gira entre 5 a 6 voltas completas
+                duration: 3000,
+                ease: 'Cubic.easeOut',
+                onComplete: checkResult.bind(this)
+            });
+        }
 
-            function rotateTheWheel() {
-                if (!wheelstarted) {
-                    wheelstarted = true;
-                    this.tweens.add({
-                        targets: wheel,
-                        angle: 685,
-                        duration: 5000,
-                        ease: 'Cubic.easeOut',
-                        onComplete: function() {
-                            alert("Parabéns! Você ganhou 3% ou saldo x será redirecionado exemplo.");
-                            window.location.href = 'https://google.com';
-                        }
-                    });
-                }
+        function checkResult() {
+            if (spinCount < 3) {
+                alert("Você perdeu esta rodada. Tente novamente!");
+            } else {
+                alert("Parabéns! Você ganhou um bônus!");
+                window.location.href = 'https://google.com'; // Redireciona após ganhar
+                spinCount = 0; // Reseta o contador após ganhar
             }
         }
     </script>
