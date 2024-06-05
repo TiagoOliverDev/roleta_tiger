@@ -211,7 +211,7 @@
         }
 
         // seta prêmio
-        var index_prize = setPrizes(9)
+        var index_prize = setPrizes(5)
 
 
         function getPrizeText(index_prizes) {
@@ -300,7 +300,7 @@
             this.load.crossOrigin = 'anonymous';
             this.load.image("wheel", "images/roletaNova.png");
             // this.load.image("wheel", "images/roletanova.svg");
-            this.load.image("needle", "images/ponteiro3.png");
+            this.load.image("needle", "images/Needle.png");
             this.load.image("tiger", "images/tiger.png");
             this.load.audio("spinSound", "sounds/spinSound.mp3"); 
             this.load.audio("winSound", "sounds/winSound.mp3"); 
@@ -313,8 +313,7 @@
             var height = this.cameras.main.height;
 
             var wheelScale = 0.7; // Uso para desktop
-            // var needleScale = 0.75;
-            var needleScale = 0.21;
+            var needleScale = 0.75;
             var tigerScale = 0.5;
             var wheelPositionX = 500; // Posição X da roleta para desktop
             var wheelPositionY = height / 2; // Posição Y centralizada

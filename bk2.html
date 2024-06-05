@@ -189,51 +189,6 @@
     </div>
     <script>
 
-        var spinCount = 0; 
-
-        function setPrizes(index_prizes){
-            /*
-                o - Bônus de até R$300
-                1 - Bônus de até R$200
-                2 - Bônus de até R$100
-                3 - R$10 + 100% do seu primeiro depósito
-                4 - Sem sorte, gire novamente
-                5 - Bônus de até R$400
-                6 - Bônus de até R$300
-                7 - Bônus de até R$200
-                8 - Bônus de até R$100
-                9 - R$10 + 100% do seu primeiro depósito
-                10 - Sem sorte, gire novamente
-                11 - Bônus de até R$400
-            */
-
-           return index_prizes
-        }
-
-        // seta prêmio
-        var index_prize = setPrizes(9)
-
-
-        function getPrizeText(index_prizes) {
-            const prizes = [
-                "Bônus de até R$300",       
-                "Bônus de até R$200",       
-                "Bônus de até R$100",       
-                "R$10 + 100% do seu primeiro depósito",  
-                "Sem sorte, gire novamente",           
-                "Bônus de até R$400",       
-                "Bônus de até R$300",       
-                "Bônus de até R$200",       
-                "Bônus de até R$100",       
-                "R$10 + 100% do seu primeiro depósito",  
-                "Sem sorte, gire novamente",             
-                "Bônus de até R$400"        
-            ];
-
-            return prizes[index_prizes]
-        }
-
-
         function createConfetti() {
             for (let i = 0; i < 100; i++) {
                 const confetti = document.createElement('div');
@@ -293,115 +248,147 @@
         };
 
         var game = new Phaser.Game(config);
-        
+        var spinCount = 0; 
         var winSound;
 
         function preload() {
             this.load.crossOrigin = 'anonymous';
             this.load.image("wheel", "images/roletaNova.png");
             // this.load.image("wheel", "images/roletanova.svg");
-            this.load.image("needle", "images/ponteiro3.png");
+            this.load.image("needle", "images/Needle.png");
             this.load.image("tiger", "images/tiger.png");
             this.load.audio("spinSound", "sounds/spinSound.mp3"); 
             this.load.audio("winSound", "sounds/winSound.mp3"); 
         }
 
-        var wheel; // variável global da roleta
-
         function create() {
             var width = this.cameras.main.width;
             var height = this.cameras.main.height;
 
-            var wheelScale = 0.7; // Uso para desktop
-            // var needleScale = 0.75;
-            var needleScale = 0.21;
+            // Define as configurações padrão para desktop
+            // var wheelScale = 0.4;
+            var wheelScale = 0.7; // ativar para roleta "images/roleta01.png"
+            var needleScale = 0.75;
             var tigerScale = 0.5;
-            var wheelPositionX = 500; // Posição X da roleta para desktop
-            var wheelPositionY = height / 2; // Posição Y centralizada
-            var needlePositionX = 800; // Posição X da agulha para desktop
-            var needlePositionY = height / 2; // Posição Y centralizada da agulha
-            var tigerPositionX = 1250; // Posição X do tigre para desktop
-            var tigerPositionY = height / 2 + 200; // Posição Y do tigre abaixo da roleta
+            var wheelPositionX = 500;
+            var wheelPositionY = height / 2;
+            var needlePositionX = 800;
+            var needlePositionY = height / 2;
+            var tigerPositionX = 1250;
+            var tigerPositionY = height / 2 + 200;
 
+            // Ajusta para dispositivos móveis
             if (width < 600) {
-                // Redefine as escalas e posições para dispositivos móveis
-                wheelScale = 0.4;
+                // Configurações específicas para dispositivos móveis
+                // wheelScale = 0.21;
+                wheelScale = 0.4;   // ativar para roleta "images/roleta01.png"
                 needleScale = 0.4;
                 tigerScale = 0.3;
-                wheelPositionX = width / 2;
-                wheelPositionY = height / 2 - 100;
-                needlePositionX = width / 2;
-                needlePositionY = height / 2 - 50;
-                tigerPositionX = width / 2;
-                tigerPositionY = height / 2 + 100;
-        }
 
-        var wheel = this.add.sprite(wheelPositionX, wheelPositionY, "wheel").setInteractive();
-        wheel.setOrigin(0.5);
-        wheel.setScale(wheelScale);
-        var needle = this.add.sprite(needlePositionX, needlePositionY, "needle");
-        needle.setOrigin(0.5);
-        needle.setScale(needleScale);
-        var tiger = this.add.image(tigerPositionX, tigerPositionY, "tiger");
-        tiger.setScale(tigerScale);
-        var spinSound = this.sound.add("spinSound");
-        winSound = this.sound.add("winSound");
-
-        wheel.on('pointerdown', function () {
-            if (spinCount < 3) {
-                spinCount++;
-                console.log(spinCount)
-                spinSound.play();
-                var segmentAngle = 360 / 12;                                // Cada segmento tem 30 graus
-                var desiredPrizeIndex = spinCount < 3 ? 4 : index_prize;    // Index de cada prêmio/segmento (0 - 11)
-                var stopAngle = segmentAngle * desiredPrizeIndex;           // Parar no prêmio desejado
-                var randomSpins = Phaser.Math.Between(5, 10) * 360;         // Número aleatório de voltas completas
-                var totalAngle = randomSpins + stopAngle;
-                this.tweens.add({
-                    targets: wheel,
-                    angle: totalAngle,
-                    duration: 8000,
-                    ease: 'Cubic.easeOut',
-                    onComplete: () => {
-                        spinSound.stop();
-                        wheel.angle -= totalAngle;
-                        checkResult.call(this);
-                    }
-                });
-            }
-        }, this);
-    }
-
-        function checkResult() {
-            let modalText = document.getElementById('modal-text');
-            let modalButton = document.getElementById('modal-button');
-            let modal = document.getElementById('overlay');
-            let winningMessage = document.getElementById('winning-message');
-
-            let prizeText; 
-
-            if (spinCount < 3) {
-                prizeText = getPrizeText(4); 
-                modalButton.textContent = "Tentar Novamente";
-                winningMessage.style.display = "none";
-            } else {
-                prizeText = getPrizeText(index_prize); 
-                modalButton.textContent = "Resgatar Prêmio";
-                winningMessage.style.display = "flex";
-                modalButton.onclick = function() {
-                    window.location.href = 'https://www.bet69pro.bet/register?id=657b639287f7080028f3d57c';
-                };
-                winSound.play();
+                wheelPositionX = width / 2 - 30;
+                wheelPositionY = height / 2 - 200;
+                needlePositionX = width / 2 + 140; // Ajuste preciso para a posição da agulha
+                needlePositionY = height / 2 - 200;
+                tigerPositionX = width / 2; // Centraliza o tigre
+                tigerPositionY = height / 2 + 150;
             }
 
-            modalText.textContent = prizeText;
-            modal.style.display = "flex"; 
+            // Cria os objetos no jogo
+            var wheel = this.add.sprite(wheelPositionX, wheelPositionY, "wheel").setInteractive();
+            wheel.setOrigin(0.5);
+            wheel.setScale(wheelScale);
+
+            var needle = this.add.sprite(needlePositionX, needlePositionY, "needle");
+            needle.setOrigin(0.5);
+            needle.setScale(needleScale);
+
+            var tiger = this.add.image(tigerPositionX, tigerPositionY, "tiger");
+            tiger.setScale(tigerScale);
+
+            // Sons
+            var spinSound = this.sound.add("spinSound");
+            winSound = this.sound.add("winSound");
+
+            // wheel.on('pointerdown', function () {
+            //     spinCount++;
+            //     spinSound.play();
+            //     this.tweens.add({
+            //         targets: wheel,
+            //         angle: 360 * 5 + Math.random() * 360,
+            //         duration: 10000,
+            //         ease: 'Cubic.easeOut',
+            //         onComplete: () => {
+            //             spinSound.stop();
+            //             checkResult.call(this);
+            //         }
+            //     });
+            // }, this);
+
+            wheel.on('pointerdown', function () {
+                if (!spinCount) {
+                    spinCount++;
+                    spinSound.play();
+                    rotateTheWheel.call(this, wheel);
+                }
+            }, this);
+
         }
 
-    function closeModal() {
-        document.getElementById('overlay').style.display = 'none';
-    }
+        function rotateTheWheel(wheel) {
+            var segmentAngle = 360 / 12; // Cada segmento representa 30 graus
+            var desiredPrizeIndex = 4; // Prêmio desejado (0 a 11)
+            var stopAngle = segmentAngle * desiredPrizeIndex; // Calcular o ângulo para parar no prêmio desejado
+            var randomSpins = Phaser.Math.Between(5, 10) * 360; // Número aleatório de voltas completas
+            var totalAngle = randomSpins + stopAngle - (wheel.angle % 360); // Ajustar para a posição atual da roleta
 
+            this.tweens.add({
+                targets: wheel,
+                angle: totalAngle,
+                duration: 5000,
+                ease: 'Cubic.easeOut',
+                onComplete: () => {
+                    spinSound.stop();
+                    alert("Parabéns! Você ganhou o prêmio número " + (desiredPrizeIndex + 1));
+                    window.location.href = 'https://google.com';
+                }
+            });
+        }
+
+        // function checkResult() {
+        //     let modalText = document.getElementById('modal-text');
+        //     let modalButton = document.getElementById('modal-button');
+        //     let modal = document.getElementById('overlay');
+        //     let winningMessage = document.getElementById('winning-message');
+
+        //     if (spinCount < 2) {
+        //         msgError = getRandomError()
+        //         modalText.textContent = msgError;
+        //         modalButton.textContent = "Tentar Novamente";
+        //         modalButton.onclick = closeModal; 
+        //         winningMessage.style.display = "none"; 
+        //         modal.style.display = "flex";
+        //     } else {
+        //         createConfetti();
+        //         msgPrize = getRandomPrize()
+        //         modalText.textContent = msgPrize;
+        //         modalButton.textContent = "Resgatar Prêmio";
+        //         winningMessage.style.display = "flex"; 
+        //         modalButton.onclick = function() { 
+        //             window.location.href = 'https://www.bet69pro.bet/register?id=657b639287f7080028f3d57c';
+        //         };
+        //         modal.style.display = "flex";
+        //         winSound.play();
+        //     }
+        // }
+
+        // function closeModal() {
+        //     document.getElementById('overlay').style.display = 'none';
+        //     if (spinCount >= 2) {
+        //         createConfetti();
+        //         window.location.href = 'https://www.bet69pro.bet/register?id=657b639287f7080028f3d57c'; 
+        //         spinCount = 0; 
+        //     }
+        // }
     </script>
 </body>
 </html>

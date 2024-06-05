@@ -206,33 +206,13 @@
                 10 - Sem sorte, gire novamente
                 11 - Bônus de até R$400
             */
-
+           if(spinCount < 3){
+            return 4
+           }
            return index_prizes
         }
 
-        // seta prêmio
-        var index_prize = setPrizes(9)
-
-
-        function getPrizeText(index_prizes) {
-            const prizes = [
-                "Bônus de até R$300",       
-                "Bônus de até R$200",       
-                "Bônus de até R$100",       
-                "R$10 + 100% do seu primeiro depósito",  
-                "Sem sorte, gire novamente",           
-                "Bônus de até R$400",       
-                "Bônus de até R$300",       
-                "Bônus de até R$200",       
-                "Bônus de até R$100",       
-                "R$10 + 100% do seu primeiro depósito",  
-                "Sem sorte, gire novamente",             
-                "Bônus de até R$400"        
-            ];
-
-            return prizes[index_prizes]
-        }
-
+        var index_prizes = setPrizes(4)
 
         function createConfetti() {
             for (let i = 0; i < 100; i++) {
@@ -300,7 +280,7 @@
             this.load.crossOrigin = 'anonymous';
             this.load.image("wheel", "images/roletaNova.png");
             // this.load.image("wheel", "images/roletanova.svg");
-            this.load.image("needle", "images/ponteiro3.png");
+            this.load.image("needle", "images/Needle.png");
             this.load.image("tiger", "images/tiger.png");
             this.load.audio("spinSound", "sounds/spinSound.mp3"); 
             this.load.audio("winSound", "sounds/winSound.mp3"); 
@@ -313,8 +293,7 @@
             var height = this.cameras.main.height;
 
             var wheelScale = 0.7; // Uso para desktop
-            // var needleScale = 0.75;
-            var needleScale = 0.21;
+            var needleScale = 0.75;
             var tigerScale = 0.5;
             var wheelPositionX = 500; // Posição X da roleta para desktop
             var wheelPositionY = height / 2; // Posição Y centralizada
@@ -348,19 +327,18 @@
         winSound = this.sound.add("winSound");
 
         wheel.on('pointerdown', function () {
-            if (spinCount < 3) {
+            if (!spinCount) {
                 spinCount++;
-                console.log(spinCount)
                 spinSound.play();
-                var segmentAngle = 360 / 12;                                // Cada segmento tem 30 graus
-                var desiredPrizeIndex = spinCount < 3 ? 4 : index_prize;    // Index de cada prêmio/segmento (0 - 11)
-                var stopAngle = segmentAngle * desiredPrizeIndex;           // Parar no prêmio desejado
-                var randomSpins = Phaser.Math.Between(5, 10) * 360;         // Número aleatório de voltas completas
+                var segmentAngle = 360 / 12; // Cada segmento tem 30 graus
+                var desiredPrizeIndex = index_prizes; // Index de cada prêmio/segmento (0 - 11)
+                var stopAngle = segmentAngle * desiredPrizeIndex; // Parar no prêmio desejado
+                var randomSpins = Phaser.Math.Between(5, 10) * 360; // Número aleatório de voltas completas
                 var totalAngle = randomSpins + stopAngle;
                 this.tweens.add({
                     targets: wheel,
                     angle: totalAngle,
-                    duration: 8000,
+                    duration: 5000,
                     ease: 'Cubic.easeOut',
                     onComplete: () => {
                         spinSound.stop();
@@ -372,36 +350,41 @@
         }, this);
     }
 
-        function checkResult() {
-            let modalText = document.getElementById('modal-text');
-            let modalButton = document.getElementById('modal-button');
-            let modal = document.getElementById('overlay');
-            let winningMessage = document.getElementById('winning-message');
+    function checkResult() {
+        let modalText = document.getElementById('modal-text');
+        let modalButton = document.getElementById('modal-button');
+        let modal = document.getElementById('overlay');
+        let winningMessage = document.getElementById('winning-message');
 
-            let prizeText; 
-
-            if (spinCount < 3) {
-                prizeText = getPrizeText(4); 
-                modalButton.textContent = "Tentar Novamente";
-                winningMessage.style.display = "none";
-            } else {
-                prizeText = getPrizeText(index_prize); 
-                modalButton.textContent = "Resgatar Prêmio";
-                winningMessage.style.display = "flex";
-                modalButton.onclick = function() {
-                    window.location.href = 'https://www.bet69pro.bet/register?id=657b639287f7080028f3d57c';
-                };
-                winSound.play();
-            }
-
-            modalText.textContent = prizeText;
-            modal.style.display = "flex"; 
+        if (spinCount < 3) {
+            let msgError = getRandomError();
+            modalText.textContent = msgError;
+            modalButton.textContent = "Tentar Novamente";
+            modalButton.onclick = closeModal;
+            winningMessage.style.display = "none";
+            modal.style.display = "flex";
+        } else {
+            createConfetti();
+            let msgPrize = getRandomPrize();
+            modalText.textContent = msgPrize;
+            modalButton.textContent = "Resgatar Prêmio";
+            winningMessage.style.display = "flex";
+            modalButton.onclick = function() {
+                window.location.href = 'https://www.bet69pro.bet/register?id=657b639287f7080028f3d57c';
+            };
+            modal.style.display = "flex";
+            winSound.play();
         }
+    }
 
     function closeModal() {
         document.getElementById('overlay').style.display = 'none';
+        if (spinCount >= 2) {
+            createConfetti();
+            window.location.href = 'https://www.bet69pro.bet/register?id=657b639287f7080028f3d57c';
+            spinCount = 0;
+        }
     }
-
     </script>
 </body>
 </html>
