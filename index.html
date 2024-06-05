@@ -253,9 +253,9 @@
 
         function preload() {
             this.load.crossOrigin = 'anonymous';
-            this.load.image("wheel", "images/roleta01.png");
+            this.load.image("wheel", "images/roletaNova.png");
             // this.load.image("wheel", "images/roletanova.svg");
-            this.load.image("needle", "Needle.png");
+            this.load.image("needle", "images/Needle.png");
             this.load.image("tiger", "images/tiger.png");
             this.load.audio("spinSound", "sounds/spinSound.mp3"); 
             this.load.audio("winSound", "sounds/winSound.mp3"); 
@@ -309,13 +309,13 @@
             var spinSound = this.sound.add("spinSound");
             winSound = this.sound.add("winSound");
 
-            this.input.on('pointerdown', function () {
+            wheel.on('pointerdown', function () {
                 spinCount++;
                 spinSound.play();
                 this.tweens.add({
                     targets: wheel,
                     angle: 360 * 5 + Math.random() * 360,
-                    duration: 8000,
+                    duration: 10000,
                     ease: 'Cubic.easeOut',
                     onComplete: () => {
                         spinSound.stop();
@@ -324,8 +324,6 @@
                 });
             }, this);
         }
-
-
 
         function checkResult() {
             let modalText = document.getElementById('modal-text');
