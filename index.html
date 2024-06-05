@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Discount Wheel</title>
+    <title>Roleta de prêmios</title>
     <script src="jquery.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.js"></script>
     <style>
@@ -109,7 +109,7 @@
             animation-delay: var(--delay);
         }
 
-        /* Media queries for responsiveness */
+
         @media (max-width: 600px) {
             #modal-content {
                 width: 80%;
@@ -123,34 +123,34 @@
                 width: 70%;
             }
             #dwheel .sprite {
-                max-width: 50%; /* Reduce size of wheel and tiger */
-                height: auto; /* Maintain aspect ratio */
+                max-width: 50%; 
+                height: auto;
             }
             #dwheel {
-                flex-direction: column; /* Stack wheel and tiger vertically */
+                flex-direction: column; 
             }
         }
 
         @media (min-width: 601px) and (max-width: 1024px) {
             #modal-content {
-                width: 50%; /* Moderate size for tablets */
+                width: 50%; 
             }
             #modal button {
-                font-size: 20px; /* Slightly larger button text on tablets */
+                font-size: 20px;
                 padding: 18px 36px;
             }
             .sprite {
-                width: 80%; /* Larger sprites for tablet */
+                width: 80%; 
             }
         }
 
         @media (min-width: 1025px) {
             #modal-content {
-                width: 30%; /* Optimal width for large screens */
-                height: 30%; /* Adjust modal height */
+                width: 30%; 
+                height: 30%; 
             }
             #modal button {
-                font-size: 22px; /* Larger text for larger screens */
+                font-size: 22px; 
                 padding: 20px 40px;
             }
         }
@@ -162,7 +162,7 @@
     <div id="overlay">
         <div id="modal-content">
             <div id="winning-message" class="win-message" style="display: none;">
-                <span>Você ganhooou !!</span> 
+                <span>Você ganhou!</span> 
                 <span>🎉</span>
             </div>
             <p 
@@ -253,8 +253,8 @@
 
         function preload() {
             this.load.crossOrigin = 'anonymous';
-            // this.load.image("wheel", "images/roleta01.png");
-            this.load.image("wheel", "images/roletanova.svg");
+            this.load.image("wheel", "images/roleta01.png");
+            // this.load.image("wheel", "images/roletanova.svg");
             this.load.image("needle", "Needle.png");
             this.load.image("tiger", "images/tiger.png");
             this.load.audio("spinSound", "sounds/spinSound.mp3"); 
@@ -262,36 +262,70 @@
         }
 
         function create() {
-            var wheel = this.add.sprite(550, this.cameras.main.height / 2, "wheel").setInteractive();
+            var width = this.cameras.main.width;
+            var height = this.cameras.main.height;
+
+            // Define as configurações padrão para desktop
+            // var wheelScale = 0.4;
+            var wheelScale = 0.7; // ativar para roleta "images/roleta01.png"
+            var needleScale = 0.75;
+            var tigerScale = 0.5;
+            var wheelPositionX = 500;
+            var wheelPositionY = height / 2;
+            var needlePositionX = 800;
+            var needlePositionY = height / 2;
+            var tigerPositionX = 1250;
+            var tigerPositionY = height / 2 + 200;
+
+            // Ajusta para dispositivos móveis
+            if (width < 600) {
+                // Configurações específicas para dispositivos móveis
+                // wheelScale = 0.21;
+                wheelScale = 0.4;   // ativar para roleta "images/roleta01.png"
+                needleScale = 0.4;
+                tigerScale = 0.3;
+
+                wheelPositionX = width / 2 - 30;
+                wheelPositionY = height / 2 - 200;
+                needlePositionX = width / 2 + 140; // Ajuste preciso para a posição da agulha
+                needlePositionY = height / 2 - 200;
+                tigerPositionX = width / 2; // Centraliza o tigre
+                tigerPositionY = height / 2 + 150;
+            }
+
+            // Cria os objetos no jogo
+            var wheel = this.add.sprite(wheelPositionX, wheelPositionY, "wheel").setInteractive();
             wheel.setOrigin(0.5);
-            // wheel.setScale(0.75);
-            wheel.setScale(0.4);
+            wheel.setScale(wheelScale);
 
-            var needle = this.add.sprite(850, this.cameras.main.height / 2, "needle");
+            var needle = this.add.sprite(needlePositionX, needlePositionY, "needle");
             needle.setOrigin(0.5);
-            needle.setScale(0.75);
+            needle.setScale(needleScale);
 
-            var tiger = this.add.image(1250, this.cameras.main.height / 2 + 200, "tiger");
-            tiger.setScale(0.5);
+            var tiger = this.add.image(tigerPositionX, tigerPositionY, "tiger");
+            tiger.setScale(tigerScale);
 
+            // Sons
             var spinSound = this.sound.add("spinSound");
             winSound = this.sound.add("winSound");
 
             this.input.on('pointerdown', function () {
                 spinCount++;
-                spinSound.play(); 
+                spinSound.play();
                 this.tweens.add({
                     targets: wheel,
-                    angle: 360 * 5 + Math.random() * 360, 
-                    duration: 8000, 
+                    angle: 360 * 5 + Math.random() * 360,
+                    duration: 8000,
                     ease: 'Cubic.easeOut',
                     onComplete: () => {
-                        spinSound.stop(); 
+                        spinSound.stop();
                         checkResult.call(this);
                     }
                 });
             }, this);
         }
+
+
 
         function checkResult() {
             let modalText = document.getElementById('modal-text');

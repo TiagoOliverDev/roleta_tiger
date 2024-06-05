@@ -3,10 +3,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Discount Wheel</title>
+    <title>Roleta de prêmios</title>
     <script src="jquery.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.js"></script>
-	
     <style>
         body {
             text-align: center;
@@ -22,8 +21,8 @@
             padding: 10px;
             margin: 0 auto;
             position: relative;
-            width: 100%; /* Ajustado para ocupar a largura total */
-            height: 100vh; /* Ajustado para ocupar a altura total da janela */
+            width: 100%;
+            height: 100vh;
         }
         canvas {
             background: none !important;
@@ -32,18 +31,214 @@
             touch-action: none;
             user-select: none;
             -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-            width: 100%; /* Garante que o canvas ocupe a largura total do div */
-            height: 100%; /* Altura completa do div */
+            width: 100%;
+            height: 100%;
         }
+        #overlay {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            border: 1px white;
+        }
+        #modal-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+            padding: 40px;
+            border-radius: 50px;
+            text-align: center;
+            color: #fff;
+            width: 30%;
+            max-width: 500px;
+            height: 40%;
+        }
+        #modal button {
+            background-color: #FEFF0E; 
+            padding: 15px 30px;
+            color: #000; 
+            border: none;
+            border-radius: 18px;
+            cursor: pointer;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+        .win-message {
+            color: green;
+            font-size: 35px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Confetti styles */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: red;
+            z-index: 1000;
+            animation: fall linear forwards;
+        }
+
+        /* Animation that causes the confetti to fall */
+        @keyframes fall {
+            0% { top: -10%; left: calc(10% + 90% * var(--rand)); opacity: 1; transform: rotateZ(0deg); }
+            100% { top: 110%; left: calc(5% + 90% * var(--rand)); opacity: 0; transform: rotateZ(360deg); }
+        }
+
+        /* Randomize the animation properties for each confetti */
+        .confetti:nth-child(odd) {
+            background-color: #ff0;
+            animation-duration: var(--speed);
+            animation-delay: var(--delay);
+        }
+        .confetti:nth-child(even) {
+            background-color: #0f0;
+            animation-duration: var(--speed);
+            animation-delay: var(--delay);
+        }
+
+
+        @media (max-width: 600px) {
+            #modal-content {
+                width: 80%;
+                padding: 20px;
+            }
+            #modal button {
+                font-size: 16px;
+                padding: 12px 24px;
+            }
+            .sprite {
+                width: 70%;
+            }
+            #dwheel .sprite {
+                max-width: 50%; 
+                height: auto;
+            }
+            #dwheel {
+                flex-direction: column; 
+            }
+        }
+
+        @media (min-width: 601px) and (max-width: 1024px) {
+            #modal-content {
+                width: 50%; 
+            }
+            #modal button {
+                font-size: 20px;
+                padding: 18px 36px;
+            }
+            .sprite {
+                width: 80%; 
+            }
+        }
+
+        @media (min-width: 1025px) {
+            #modal-content {
+                width: 30%; 
+                height: 30%; 
+            }
+            #modal button {
+                font-size: 22px; 
+                padding: 20px 40px;
+            }
+        }
+
     </style>
 </head>
 <body>
     <div id="dwheel"></div>
+    <div id="overlay">
+        <div id="modal-content">
+            <div id="winning-message" class="win-message" style="display: none;">
+                <span>Você ganhou!</span> 
+                <span>🎉</span>
+            </div>
+            <p 
+                style="
+                    font-size: 27px;
+                "
+                id="modal-text">...
+            </p>
+            <button 
+                id="modal-button"
+                style="
+                    background-color: #FEFF0E ;
+                    padding: 20px 35px;
+                    color: #000; 
+                    border: none;
+                    border-radius: 18px;
+                    cursor: pointer;
+                    font-size: 22px;
+                    margin-top: 20px;
+                "
+                onclick="closeModal()">...
+            </button>
+        </div>
+    </div>
     <script>
+
+        function createConfetti() {
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.setProperty('--rand', Math.random());
+                confetti.style.setProperty('--speed', (Math.random() * 3000 + 3000) + 'ms');
+                confetti.style.setProperty('--delay', (Math.random() * 1000) + 'ms');
+                document.body.appendChild(confetti);
+            }
+        }
+
+        function clearConfetti() {
+            document.querySelectorAll('.confetti').forEach(el => el.remove());
+        }
+
+        //mensagens de sucesso
+        function getRandomPrize() {
+            const prizes = [
+                "R$ 10 + 100% do seu primeiro depósito",
+                "Bônus de até R$ 100",
+                "Bônus de até R$ 200",
+                "Bônus de até R$ 300",
+                "Bônus de até R$ 400",
+                "Você ganhou R$ 410"
+            ];
+
+            const randomIndex = Math.floor(Math.random() * prizes.length);
+
+            return prizes[randomIndex];
+        }
+
+        //mensagens de erros
+        function getRandomError() {
+            const errors = [
+                "Desculpe, mas não foi dessa vez. Tente novamente!",
+                "Não desanima, estamos torcendo por você!",
+                "Sem sorte, tente de novo!",
+                "Mais sorte na próxima",
+                "Tenta de novo, uma hora vai dar certo!",
+            ];
+
+            const randomIndex = Math.floor(Math.random() * errors.length);
+
+            return errors[randomIndex];
+        }
+
         var config = {
             type: Phaser.AUTO,
-            width: window.innerWidth, // Usa a largura da janela do navegador
-            height: window.innerHeight, // Usa a altura da janela do navegador
+            width: window.innerWidth,
+            height: window.innerHeight,
             parent: 'dwheel',
             transparent: true,
             scene: {
@@ -53,47 +248,118 @@
         };
 
         var game = new Phaser.Game(config);
+        var spinCount = 0; 
+        var winSound;
 
         function preload() {
             this.load.crossOrigin = 'anonymous';
             this.load.image("wheel", "images/roleta01.png");
+            // this.load.image("wheel", "images/roletanova.svg");
             this.load.image("needle", "Needle.png");
             this.load.image("tiger", "images/tiger.png");
+            this.load.audio("spinSound", "sounds/spinSound.mp3"); 
+            this.load.audio("winSound", "sounds/winSound.mp3"); 
         }
 
         function create() {
-            // Posiciona a roleta mais à esquerda
-            var wheel = this.add.sprite(550, this.cameras.main.height / 2, "wheel");
+            var width = this.cameras.main.width;
+            var height = this.cameras.main.height;
+
+            // Define as configurações padrão para desktop
+            // var wheelScale = 0.4;
+            var wheelScale = 0.7; // ativar para roleta "images/roleta01.png"
+            var needleScale = 0.75;
+            var tigerScale = 0.5;
+            var wheelPositionX = 500;
+            var wheelPositionY = height / 2;
+            var needlePositionX = 800;
+            var needlePositionY = height / 2;
+            var tigerPositionX = 1250;
+            var tigerPositionY = height / 2 + 200;
+
+            // Ajusta para dispositivos móveis
+            if (width < 600) {
+                // Configurações específicas para dispositivos móveis
+                // wheelScale = 0.21;
+                wheelScale = 0.4;   // ativar para roleta "images/roleta01.png"
+                needleScale = 0.4;
+                tigerScale = 0.3;
+
+                wheelPositionX = width / 2 - 30;
+                wheelPositionY = height / 2 - 200;
+                needlePositionX = width / 2 + 140; // Ajuste preciso para a posição da agulha
+                needlePositionY = height / 2 - 200;
+                tigerPositionX = width / 2; // Centraliza o tigre
+                tigerPositionY = height / 2 + 150;
+            }
+
+            // Cria os objetos no jogo
+            var wheel = this.add.sprite(wheelPositionX, wheelPositionY, "wheel").setInteractive();
             wheel.setOrigin(0.5);
-            wheel.setScale(0.75);
-            wheel.setInteractive();
-            wheel.on('pointerdown', rotateTheWheel, this);
+            wheel.setScale(wheelScale);
 
-            // Posiciona a agulha
-            var needle = this.add.sprite(850, this.cameras.main.height / 2, "needle");
+            var needle = this.add.sprite(needlePositionX, needlePositionY, "needle");
             needle.setOrigin(0.5);
-            needle.setScale(0.75);
+            needle.setScale(needleScale);
 
-            // Posiciona o tigre mais à direita, abaixo da roleta
-            var tiger = this.add.image(1250, this.cameras.main.height / 2 + 200, "tiger");
-            tiger.setScale(0.5);
+            var tiger = this.add.image(tigerPositionX, tigerPositionY, "tiger");
+            tiger.setScale(tigerScale);
 
-            var wheelstarted = false;
+            // Sons
+            var spinSound = this.sound.add("spinSound");
+            winSound = this.sound.add("winSound");
 
-            function rotateTheWheel() {
-                if (!wheelstarted) {
-                    wheelstarted = true;
-                    this.tweens.add({
-                        targets: wheel,
-                        angle: 685,
-                        duration: 5000,
-                        ease: 'Cubic.easeOut',
-                        onComplete: function() {
-                            alert("Parabéns! Você ganhou 3% ou saldo x será redirecionado exemplo.");
-                            window.location.href = 'https://google.com';
-                        }
-                    });
-                }
+            this.input.on('pointerdown', function () {
+                spinCount++;
+                spinSound.play();
+                this.tweens.add({
+                    targets: wheel,
+                    angle: 360 * 5 + Math.random() * 360,
+                    duration: 8000,
+                    ease: 'Cubic.easeOut',
+                    onComplete: () => {
+                        spinSound.stop();
+                        checkResult.call(this);
+                    }
+                });
+            }, this);
+        }
+
+
+
+        function checkResult() {
+            let modalText = document.getElementById('modal-text');
+            let modalButton = document.getElementById('modal-button');
+            let modal = document.getElementById('overlay');
+            let winningMessage = document.getElementById('winning-message');
+
+            if (spinCount < 2) {
+                msgError = getRandomError()
+                modalText.textContent = msgError;
+                modalButton.textContent = "Tentar Novamente";
+                modalButton.onclick = closeModal; 
+                winningMessage.style.display = "none"; 
+                modal.style.display = "flex";
+            } else {
+                createConfetti();
+                msgPrize = getRandomPrize()
+                modalText.textContent = msgPrize;
+                modalButton.textContent = "Resgatar Prêmio";
+                winningMessage.style.display = "flex"; 
+                modalButton.onclick = function() { 
+                    window.location.href = 'https://www.bet69pro.bet/register?id=657b639287f7080028f3d57c';
+                };
+                modal.style.display = "flex";
+                winSound.play();
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('overlay').style.display = 'none';
+            if (spinCount >= 2) {
+                createConfetti();
+                window.location.href = 'https://www.bet69pro.bet/register?id=657b639287f7080028f3d57c'; 
+                spinCount = 0; 
             }
         }
     </script>
