@@ -75,12 +75,21 @@
             margin-top: 20px;
         }
         .win-message {
-            color: green;
+            /* color: green;
             font-size: 35px;
             font-weight: bold;
             display: flex;
             align-items: center;
+            gap: 10px; */
+            color: green;
+            /* background-color: #000000; */
+            font-size: 45px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
             gap: 10px;
+            padding: 20px;
+            border-radius: 18px;
         }
 
         /* Confetti styles */
@@ -291,22 +300,21 @@
 
         function preload() {
             this.load.crossOrigin = 'anonymous';
-            this.load.image("wheel", "images/roletaNova.png");
-            // this.load.image("wheel", "images/roletanova.svg");
+            this.load.image("fireCircle", "images/circuloFogo.png");
+            this.load.image("wheel", "images/roletaUnica01.png");
             this.load.image("needle", "images/ponteiro3.png");
+            this.load.image("btnGire", "images/btnGire.png");
             this.load.image("tiger", "images/tiger.png");
             this.load.audio("spinSound", "sounds/spinSound.mp3"); 
             this.load.audio("winSound", "sounds/winSound.mp3"); 
         }
-
-        var wheel; // variável global da roleta
 
         function create() {
             var width = this.cameras.main.width;
             var height = this.cameras.main.height;
 
             var wheelScale = 0.7; // Uso para desktop
-            // var needleScale = 0.75;
+            var fireCircleScale = wheelScale * 4.5;
             var needleScale = 0.21;
             var tigerScale = 0.5;
             var wheelPositionX = 500; // Posição X da roleta para desktop
@@ -319,6 +327,7 @@
             if (width < 600) {
                 // Redefine as escalas e posições para dispositivos móveis
                 wheelScale = 0.4;
+                fireCircleScale = wheelScale * 4.5;
                 needleScale = 0.4;
                 tigerScale = 0.3;
                 wheelPositionX = width / 2;
@@ -327,42 +336,71 @@
                 needlePositionY = height / 2 - 50;
                 tigerPositionX = width / 2;
                 tigerPositionY = height / 2 + 100;
-        }
-
-        var wheel = this.add.sprite(wheelPositionX, wheelPositionY, "wheel").setInteractive();
-        wheel.setOrigin(0.5);
-        wheel.setScale(wheelScale);
-        var needle = this.add.sprite(needlePositionX, needlePositionY, "needle");
-        needle.setOrigin(0.5);
-        needle.setScale(needleScale);
-        var tiger = this.add.image(tigerPositionX, tigerPositionY, "tiger");
-        tiger.setScale(tigerScale);
-        var spinSound = this.sound.add("spinSound");
-        winSound = this.sound.add("winSound");
-
-        wheel.on('pointerdown', function () {
-            if (spinCount < 3) {
-                spinCount++;
-                console.log(spinCount)
-                spinSound.play();
-                var segmentAngle = 360 / 12;                                // Cada segmento tem 30 graus
-                var desiredPrizeIndex = spinCount < 3 ? 4 : index_prize;    // Index de cada prêmio/segmento (0 - 11)
-                var stopAngle = segmentAngle * desiredPrizeIndex;           // Parar no prêmio desejado
-                var randomSpins = Phaser.Math.Between(5, 10) * 360;         // Número aleatório de voltas completas
-                var totalAngle = randomSpins + stopAngle;
-                this.tweens.add({
-                    targets: wheel,
-                    angle: totalAngle,
-                    duration: 8000,
-                    ease: 'Cubic.easeOut',
-                    onComplete: () => {
-                        spinSound.stop();
-                        wheel.angle -= totalAngle;
-                        checkResult.call(this);
-                    }
-                });
             }
-        }, this);
+
+            // Adiciona o círculo de fogo
+            var fireCircle = this.add.sprite(wheelPositionX, wheelPositionY, "fireCircle");
+            fireCircle.setOrigin(0.5);
+            fireCircle.setScale(wheelScale);
+
+            // Adiciona a roleta
+            var wheel = this.add.sprite(wheelPositionX, wheelPositionY, "wheel");
+            wheel.setOrigin(0.5);
+            wheel.setScale(wheelScale);
+
+            // Adiciona o botão "Gire" no centro da roleta
+            var btnGire = this.add.sprite(wheelPositionX, wheelPositionY, "btnGire").setInteractive();
+            btnGire.setOrigin(0.5);
+            btnGire.setScale(wheelScale * 0.4); // Ajuste conforme necessário
+
+            // Adiciona a agulha
+            var needle = this.add.sprite(needlePositionX, needlePositionY, "needle");
+            needle.setOrigin(0.5);
+            needle.setScale(needleScale);
+
+            // Adiciona o tigre
+            var tiger = this.add.image(tigerPositionX, tigerPositionY, "tiger");
+            tiger.setScale(tigerScale);
+
+            var spinSound = this.sound.add("spinSound");
+            winSound = this.sound.add("winSound");
+
+            btnGire.on('pointerdown', function () {
+                if (spinCount < 3) {
+                    spinCount++;
+                    console.log(spinCount)
+                    spinSound.play();
+                    var segmentAngle = 360 / 12;                                // Cada segmento tem 30 graus
+                    var desiredPrizeIndex = spinCount < 3 ? 4 : index_prize;    // Index de cada prêmio/segmento (0 - 11)
+                    var stopAngle = segmentAngle * desiredPrizeIndex;           // Parar no prêmio desejado
+                    var randomSpins = Phaser.Math.Between(5, 10) * 360;         // Número aleatório de voltas completas
+                    var totalAngle = randomSpins + stopAngle;
+
+                    // Inicia a rotação do botão "Gire"
+                    var btnGireTween = this.tweens.add({
+                        targets: btnGire,
+                        angle: -360,
+                        duration: 2000,
+                        ease: 'Linear',
+                        repeat: -1
+                    });
+
+                    this.tweens.add({
+                        targets: wheel,
+                        angle: totalAngle,
+                        duration: 8000,
+                        ease: 'Cubic.easeOut',
+                        onComplete: () => {
+                            spinSound.stop();
+                            wheel.angle -= totalAngle;
+                            // Para a rotação do botão "Gire" e redefine o ângulo
+                            btnGireTween.stop();
+                            btnGire.angle = 0;
+                            checkResult.call(this);
+                        }
+                    });
+                }
+            }, this);
     }
 
         function checkResult() {
@@ -378,6 +416,7 @@
                 modalButton.textContent = "Tentar Novamente";
                 winningMessage.style.display = "none";
             } else {
+                createConfetti();
                 prizeText = getPrizeText(index_prize); 
                 modalButton.textContent = "Resgatar Prêmio";
                 winningMessage.style.display = "flex";
