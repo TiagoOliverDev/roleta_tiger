@@ -13,7 +13,6 @@
             background-size: cover; 
             background-repeat: no-repeat;
             background-attachment: fixed;
-            background-position: center center;
             margin: 0;
             overflow: hidden;
         }
@@ -135,7 +134,7 @@
                 width: 70%;
             }
             #dwheel .sprite {
-                max-width: 100%; 
+                max-width: 50%; 
                 height: auto;
             }
             #dwheel {
@@ -165,11 +164,6 @@
                 font-size: 22px; 
                 padding: 20px 40px;
             }
-        }
-
-        @media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi) {
-            /* Carregar imagens de alta resolução para dispositivos Retina */
-            background-image: url('path/to/high-res-image.jpg');
         }
 
     </style>
@@ -219,7 +213,7 @@
         }
 
         // seta prêmio
-        var index_prize = setPrizes(5)
+        var index_prize = setPrizes(0)
 
 
         function getPrizeText(index_prizes) {
@@ -307,8 +301,7 @@
         function preload() {
             this.load.crossOrigin = 'anonymous';
             this.load.image("fireCircle", "images/circuloFogo.png");
-            this.load.image("wheel", "images/roleta04.png");
-            // this.load.image("wheel", "images/roletanova.svg");
+            this.load.image("wheel", "images/roletaUnica01.png");
             this.load.image("needle", "images/ponteiro3.png");
             this.load.image("btnGire", "images/btnGire.png");
             this.load.image("tiger", "images/tiger.png");
@@ -320,9 +313,7 @@
             var width = this.cameras.main.width;
             var height = this.cameras.main.height;
 
-            // Uso para desktop
-            var wheelScale = 0.7; 
-            // var wheelScale = 0.4; // para images/roletanova.svg
+            var wheelScale = 0.7; // Uso para desktop
             var fireCircleScale = wheelScale * 4.5;
             var needleScale = 0.21;
             var tigerScale = 0.5;
@@ -337,14 +328,14 @@
                 // Redefine as escalas e posições para dispositivos móveis
                 wheelScale = 0.4;
                 fireCircleScale = wheelScale * 4.5;
-                needleScale = 0.14;
+                needleScale = 0.4;
                 tigerScale = 0.3;
-                wheelPositionX = width / 2 - 40;
-                wheelPositionY = height / 2 - 195;
-                needlePositionX = width / 1 - 77;
-                needlePositionY = height / 2 - 215;
+                wheelPositionX = width / 2;
+                wheelPositionY = height / 2 - 100;
+                needlePositionX = width / 2;
+                needlePositionY = height / 2 - 50;
                 tigerPositionX = width / 2;
-                tigerPositionY = height / 2 + 160;
+                tigerPositionY = height / 2 + 100;
             }
 
             // Adiciona o círculo de fogo
