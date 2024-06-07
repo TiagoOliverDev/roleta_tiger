@@ -123,24 +123,37 @@
 
 
         @media (max-width: 600px) {
+            body {
+                background-size: 100% 100%; /* Ajusta a imagem para preencher exatamente o espaço disponível */
+            }
+            #overlay {
+                /* Opcional: Ajuste para garantir que o modal esteja centralizado verticalmente se necessário */
+                /* display: flex; */
+                width: 100%; /* Mantém o overlay cobrindo toda a tela */
+                height: 100%;
+                align-items: center;
+                justify-content: center;
+            }
             #modal-content {
-                width: 80%;
-                padding: 20px;
+                width: 90%; /* Aumentar a largura para usar mais espaço */
+                height: auto; /* Altura automática para acomodar o conteúdo */
+                padding: 10px; /* Reduzir o padding */
+                border-radius: 20px; /* Ajustar bordas para um visual mais suave */
+                box-sizing: border-box; /* Garantir que padding não adicione à largura */
             }
-            #modal button {
-                font-size: 16px;
-                padding: 12px 24px;
+
+            #modal-button {
+                padding: 10px 20px; /* Reduzir o padding para economizar espaço */
+                font-size: 18px; /* Ajustar o tamanho da fonte para melhor legibilidade */
             }
-            .sprite {
-                width: 70%;
+
+            .win-message {
+                font-size: 20px; /* Tornar a mensagem de vitória menor para caber melhor */
             }
-            #dwheel .sprite {
-                max-width: 100%; 
-                height: auto;
-            }
-            #dwheel {
-                flex-direction: column; 
-            }
+
+            #modal-text {
+                font-size: 16px; /* Tamanho menor do texto para melhor ajuste */
+    }
         }
 
         @media (min-width: 601px) and (max-width: 1024px) {
@@ -307,6 +320,7 @@
         function preload() {
             this.load.crossOrigin = 'anonymous';
             this.load.image("fireCircle", "images/circuloFogo.png");
+            // this.load.image("wheel", "images/roleta04.png");
             this.load.image("wheel", "images/roleta04.png");
             // this.load.image("wheel", "images/roletanova.svg");
             this.load.image("needle", "images/ponteiro3.png");
@@ -322,6 +336,7 @@
 
             // Uso para desktop
             var wheelScale = 0.7; 
+            var btnGireScale = 0.32;
             // var wheelScale = 0.4; // para images/roletanova.svg
             var fireCircleScale = wheelScale * 4.5;
             var needleScale = 0.21;
@@ -335,16 +350,17 @@
 
             if (width < 600) {
                 // Redefine as escalas e posições para dispositivos móveis
-                wheelScale = 0.4;
+                wheelScale = 0.46;
+                btnGireScale = 0.22;
                 fireCircleScale = wheelScale * 4.5;
-                needleScale = 0.14;
-                tigerScale = 0.3;
-                wheelPositionX = width / 2 - 40;
-                wheelPositionY = height / 2 - 195;
-                needlePositionX = width / 1 - 77;
-                needlePositionY = height / 2 - 215;
+                needleScale = 0.13;
+                tigerScale = 0.35;
+                wheelPositionX = width / 2 - 20;
+                wheelPositionY = height / 2 - 165;
+                needlePositionX = width / 1 - 70;
+                needlePositionY = height / 2 - 175;
                 tigerPositionX = width / 2;
-                tigerPositionY = height / 2 + 160;
+                tigerPositionY = height / 2 + 180;
             }
 
             // Adiciona o círculo de fogo
@@ -354,13 +370,20 @@
 
             // Adiciona a roleta
             var wheel = this.add.sprite(wheelPositionX, wheelPositionY, "wheel");
-            wheel.setOrigin(0.5);
+            wheel.setOrigin(0.5, 0.5);
             wheel.setScale(wheelScale);
+
+            // // Após adicionar a roleta
+            // var graphics = this.add.graphics({ fillStyle: { color: 0xff0000 } });
+            // graphics.fillCircle(wheelPositionX, wheelPositionY, 5);  // Isso desenha um círculo vermelho no centro da roleta
+
+            // // Para ver o contorno da imagem da roleta
+            // this.add.graphics().lineStyle(2, 0x00ff00).strokeRectShape(wheel.getBounds());
 
             // Adiciona o botão "Gire" no centro da roleta
             var btnGire = this.add.sprite(wheelPositionX, wheelPositionY, "btnGire").setInteractive();
             btnGire.setOrigin(0.5);
-            btnGire.setScale(wheelScale * 0.4); // Ajuste conforme necessário
+            btnGire.setScale(btnGireScale); // Ajuste conforme necessário
 
             // Adiciona a agulha
             var needle = this.add.sprite(needlePositionX, needlePositionY, "needle");
